@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment 3</title>
+</head>
+<body>
+  <h1 id="connection" style="color:red;">Not Connected...<h1>
+  <p id="wind">Wind = </p>
+  <p id="descWind">Test</p>
+  <p id="water">Water =</p>
+  <p id="descWater">Test</p>
+  <script>
+    let wscon=()=>{
+      let ws = new WebSocket("ws://localhost:8080/ws")
+      ws.onopen=function(e){
+        console.log("Connection open...")
+        document.getElementById("connection").innerText="Connected!"
+        document.getElementById("connection").getAttribute("style")="color:green;"
+      }
+      ws.onmessage=function(e){
+        let data=JSON.parse(e.data)
+        let descWind
+        if(data.wind<=6){
+          descWind="Aman"
+        }else if(data.wind>=7&&data.wind<=15){
+          descWind="Siaga"
+        }else{
+          descWind="Bahaya"
+        }
+        let descWater
+        if(data.water<=5){
+          descWater="Aman"
+        }else if(data.water>=6&&data.water<=8){
+          descWater="Siaga"
+        }else{
+          descWater="Bahaya"
+        }
+
+        document.getElementById("wind").innerText=`Wind = ${data.wind}m/s`
+        document.getElementById("descWind").innerText=`Wind Status= ${descWind}`
+        document.getElementById("water").innerText=`Water = ${data.water}m`
+        document.getElementById("descWater").innerText=`Water Status= ${descWater}`
+      }
+      ws.onclose=function(e){
+        console.log("Connection Closed..")
+        document.getElementById("connection").innerText="Not Connected..."
+        document.getElementById("connection").getAttribute("style")="color:red;"
+      }
+    }
+
+    wscon()
+  </script>
+</body>
+</html>
