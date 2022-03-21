@@ -13,10 +13,10 @@ import (
 var wind, water int
 var isSent bool = true
 
-var upgrader=websocket.Upgrader{
-	ReadBufferSize: 1024,
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	CheckOrigin:func(r *http.Request)bool{
+	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
 }
@@ -24,6 +24,7 @@ var upgrader=websocket.Upgrader{
 func main() {
 	go reroll()
 	server := gin.Default()
+
 	data := map[string]interface{}{
 		"wind":  &wind,
 		"water": &water,
@@ -33,10 +34,10 @@ func main() {
 		c.JSON(http.StatusAccepted, gin.H{
 			"status": data,
 		})
-	
+
 	})
-	server.GET("/ws",wsEndPoint)
-	server.GET("/",func(c *gin.Context) {
+	server.GET("/ws", wsEndPoint)
+	server.GET("/", func(c *gin.Context) {
 		c.File("./index.html")
 	})
 
@@ -48,15 +49,14 @@ func reroll() {
 	for {
 		wind = rand.Intn(100)
 		water = rand.Intn(100)
-		isSent=false
-		time.Sleep(15*time.Second)
+		isSent = false
+		time.Sleep(15 * time.Second)
 	}
 }
 
-
-func wsEndPoint(c *gin.Context){
-	ws,err:=upgrader.Upgrade(c.Writer,c.Request,nil)
-	if err != nil{
+func wsEndPoint(c *gin.Context) {
+	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
 		panic(err)
 	}
 
@@ -68,17 +68,16 @@ func wsEndPoint(c *gin.Context){
 	defer ws.Close()
 
 	for {
-		for isSent==false{
-			err:=ws.WriteJSON(data)
-			if err != nil{
+		for isSent == false {
+			err := ws.WriteJSON(data)
+			if err != nil {
 				panic(err)
 			}
-			isSent=true
+			isSent = true
 		}
-		if err !=nil{
+		if err != nil {
 			log.Fatal(err)
 		}
 	}
-
 
 }
